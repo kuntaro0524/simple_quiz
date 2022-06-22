@@ -1,4 +1,11 @@
-import { Box, Button, Container, Flex, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  useDisclosure,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CorrectModal } from "./CorrectModal";
@@ -87,10 +94,13 @@ export const QuizMain = () => {
 
       {qArray.map((each_quiz) => (
         <>
-          <Flex color="green">
-            <Container fontSize={18}>{each_quiz.answer}</Container>
+          <Flex color="green" bgColor={"yellow"}>
+            <Center width="900px" boxShadow="md" fontSize={18}>
+              {each_quiz.answer}
+            </Center>
             <Button
               borderRadius={5}
+              borderColor="gray.200"
               value={each_quiz._id}
               onClick={onClickUnko}
             >
