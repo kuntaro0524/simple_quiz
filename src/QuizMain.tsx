@@ -1,5 +1,6 @@
+import { Box, Button, Container, Flex, useDisclosure } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CorrectModal } from "./CorrectModal";
 import { qType } from "./types/qType";
 import { useQuiz } from "./useQuiz";
@@ -7,21 +8,29 @@ import { useQuiz } from "./useQuiz";
 export const QuizMain = () => {
   // const server_url = process.env.REACT_APP_SERVER_URL;
   // const server_port = process.env.REACT_APP_SERVER_PORT;
-  // const server_url = "10.10.122.179";
-  const server_url = "192.168.99.123";
+  const server_url = "10.10.122.179";
+  // const server_url = "192.168.99.123";
   const server_port = "9201";
   let selquizid = "PPPPPPPP";
 
   // クイズをDBから取得するとこ
   let tmpArray: qType[];
   const { qArray, setQarray } = useQuiz();
-  let isOpen = false;
 
-  const onClose = () => {
-    console.log("onClose function was called.");
-  }
+  // ChakraUIのMordalを利用する準備
+  let { isOpen, onOpen, onClose } = useDisclosure();
 
-  let selectedQuiz = qArray[0];
+  let [selectedQuiz, setSelectedQuiz] = useState<qType>({
+    _id: "test",
+    question: "test",
+    answer: "answer",
+    page: 133,
+    category: "TTESTTSET",
+    made_date: "2022/06/22",
+    ntrial: 10,
+    ncorr: 5,
+    corr_ratio: 50.0,
+  });
 
   const useDB = () => {
     useEffect(() => {
@@ -58,8 +67,12 @@ export const QuizMain = () => {
     }, []);
   };
 
-  const onClickUnko = (event: React.MouseEvent<HTMLButtonElement>) => {
-    alert("UNKO!");
+  const onClickUnko = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const id = e.currentTarget.value;
+    // 受け取った配列の中に指定したIDと一致するユーザを targetUser として設定
+    const tmpselq = qArray.find((quiz) => quiz._id === id)!;
+    setSelectedQuiz(tmpselq);
+    onOpen();
   };
 
   useDB();
@@ -74,18 +87,19 @@ export const QuizMain = () => {
 
       {qArray.map((each_quiz) => (
         <>
-          <li>
-            {each_quiz.answer}
-            <button onClick={onClickUnko}>Unko</button>
-          </li>
+          <Flex color="green">
+            <Container fontSize={18}>{each_quiz.answer}</Container>
+            <Button
+              borderRadius={5}
+              value={each_quiz._id}
+              onClick={onClickUnko}
+            >
+              Modify
+            </Button>
+          </Flex>
         </>
       ))}
-      <CorrectModal
-        isOpen={isOpen}
-        onClose={onClose}
-        isAdmin={false}
-        quiz={selectedQuiz}
-      />
+      <CorrectModal isOpen={isOpen} onClose={onClose} quiz={selectedQuiz} />
     </>
   );
 };
