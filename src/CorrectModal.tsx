@@ -17,46 +17,41 @@ import {
 import { qType } from "./types/qType";
 import { useQuiz } from "./useQuiz";
 
-// Propsを定義するために必要なインポート
-// import { User } from "../../types/api/user";
-// import { PrimaryButton } from "../../atoms/button/PrimaryButton";
-// import { MyButton } from "../atoms/MyButton";
-
 type Props = {
   // クイズ情報を受け取るのだが、これはnullの可能性もある
   isOpen: boolean;
   onClose: () => void;
-  quiz: qType | null;
+  selQid: string | null;
 };
 
 export const CorrectModal = memo((props: Props) => {
+  const { qArray, setQarray } = useQuiz();
   // propsで渡されない場合には disabled と loading は　デフォルト false
   // userを引数として受け取り、それを利用して情報を表示する
-  const { isOpen, onClose, quiz } = props;
+  // 配列の中の情報を変更してしまうので受け渡すのはクイズのIDで十分
+  const { isOpen, onClose, selQid } = props;
 
-  if (quiz !== null) {
-    console.log(quiz.answer);
-  }
-
-  //   クイズを更新するために関連カスタムフックを持ってくる
-  // const { patchQuiz } = useQuiz();
+  // クイズの情報を抜き出して表示用に利用する
+  const foundindex = qArray.findIndex((quiz) => quiz._id === selQid)!;
+  const selQ = qArray[foundindex]
 
   // 情報を更新するための方法
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [question, setQuestion] = useState(selQ?.question);
+  const [answer, setAnswer] = useState(selQ?.answer);
 
-  // これらは可変なのだが、最初は指定したID番号のユーザ情報を反映すべきなの
+  // これらは可変なのだが、最初は指定したID番号のquizをいれるべき
   // useEffectは最初のレンダリングのときにだけ呼ばれる
   useEffect(() => {
-    setQuestion(quiz?.question ?? "");
-    setAnswer(quiz?.answer ?? "");
-  }, [quiz]);
+    setQuestion(selQ?.question);
+    setAnswer(selQ?.answer);
+  }, [selQ]);
 
   const onClickUpdate = () => {
-    if (quiz !== null) {
-      const newquiz = { ...quiz, question: question, answer: answer };
-      console.log(quiz._id);
-      // patchQuiz({ subject: "english", id: newquiz._id, newQuiz: newquiz });
+    if (selQ !== null) {
+      const newquiz = { ...selQ, question: question, answer: answer };
+      console.log(newquiz);
+      const newQarray = qArray.splice(foundindex, 1, newquiz)
+      // setQarray(newQarray);
     }
   };
 

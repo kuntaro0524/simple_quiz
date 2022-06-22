@@ -15,8 +15,8 @@ import { useQuiz } from "./useQuiz";
 export const QuizMain = () => {
   // const server_url = process.env.REACT_APP_SERVER_URL;
   // const server_port = process.env.REACT_APP_SERVER_PORT;
-  const server_url = "10.10.122.179";
-  // const server_url = "192.168.99.123";
+  // const server_url = "10.10.122.179";
+  const server_url = "192.168.99.123";
   const server_port = "9201";
   let selquizid = "PPPPPPPP";
 
@@ -27,17 +27,7 @@ export const QuizMain = () => {
   // ChakraUIのMordalを利用する準備
   let { isOpen, onOpen, onClose } = useDisclosure();
 
-  let [selectedQuiz, setSelectedQuiz] = useState<qType>({
-    _id: "test",
-    question: "test",
-    answer: "answer",
-    page: 133,
-    category: "TTESTTSET",
-    made_date: "2022/06/22",
-    ntrial: 10,
-    ncorr: 5,
-    corr_ratio: 50.0,
-  });
+  let [selQid, setSelQid] = useState<string>("test");
 
   const useDB = () => {
     useEffect(() => {
@@ -74,11 +64,9 @@ export const QuizMain = () => {
     }, []);
   };
 
-  const onClickUnko = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickMod = (e: React.MouseEvent<HTMLButtonElement>) => {
     const id = e.currentTarget.value;
-    // 受け取った配列の中に指定したIDと一致するユーザを targetUser として設定
-    const tmpselq = qArray.find((quiz) => quiz._id === id)!;
-    setSelectedQuiz(tmpselq);
+    setSelQid(id);
     onOpen();
   };
 
@@ -102,14 +90,14 @@ export const QuizMain = () => {
               borderRadius={5}
               borderColor="gray.200"
               value={each_quiz._id}
-              onClick={onClickUnko}
+              onClick={onClickMod}
             >
               Modify
             </Button>
           </Flex>
         </>
       ))}
-      <CorrectModal isOpen={isOpen} onClose={onClose} quiz={selectedQuiz} />
+      <CorrectModal isOpen={isOpen} onClose={onClose} selQid={selQid} />
     </>
   );
 };
