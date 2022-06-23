@@ -15,8 +15,8 @@ import { useQuiz } from "./useQuiz";
 export const QuizMain = () => {
   // const server_url = process.env.REACT_APP_SERVER_URL;
   // const server_port = process.env.REACT_APP_SERVER_PORT;
-  // const server_url = "10.10.122.179";
-  const server_url = "192.168.99.123";
+  const server_url = "10.10.122.179";
+  // const server_url = "192.168.99.123";
   const server_port = "9201";
   let selquizid = "PPPPPPPP";
 
@@ -64,15 +64,69 @@ export const QuizMain = () => {
     }, []);
   };
 
+  type Props2 = {
+    subject: string;
+    id: string;
+    newQuiz: qType;
+  };
+
+  const patchQuiz = (props2: Props2) => {
+    console.log("patchQuiz was called.");
+
+    let { subject, id, newQuiz } = props2;
+    let quiz_url = `http://${server_url}:${server_port}/${subject}/${id}`;
+    axios
+      .patch<Array<qType>>(quiz_url, newQuiz, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      })
+      .then((res) => {
+        console.log("Success to update :" + id);
+      })
+      .catch(function (error) {
+        console.log("ERROR?");
+        console.log(error.config);
+        for (let key of Object.keys(error)) {
+          console.log(key);
+          console.log(error[key]);
+        }
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
+  };
+
+  const updateDB = (subject: string) => {
+    console.log("updateDB was called.");
+
+    qArray.map((eachquiz) => {
+      const id = eachquiz._id;
+      patchQuiz({ subject, id, newQuiz: eachquiz });
+    });
+  };
+
   const onClickMod = (e: React.MouseEvent<HTMLButtonElement>) => {
     const id = e.currentTarget.value;
     setSelQid(id);
     onOpen();
   };
 
+  const onClickUpdateDB = () => {
+    updateDB("english");
+    alert("Success");
+  };
+
   useDB();
 
-  console.log("####################");
+  console.log("#### in QuizMain ######");
   console.log(qArray);
   console.log("####################");
 
@@ -97,6 +151,9 @@ export const QuizMain = () => {
           </Flex>
         </>
       ))}
+      <Button onClick={onClickUpdateDB} colorScheme={"teal"}>
+        Update database
+      </Button>
       <CorrectModal isOpen={isOpen} onClose={onClose} selQid={selQid} />
     </>
   );

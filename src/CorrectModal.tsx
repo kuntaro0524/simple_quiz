@@ -13,6 +13,7 @@ import {
   Input,
   ModalFooter,
   Button,
+  Flex,
 } from "@chakra-ui/react";
 import { qType } from "./types/qType";
 import { useQuiz } from "./useQuiz";
@@ -33,7 +34,7 @@ export const CorrectModal = memo((props: Props) => {
 
   // クイズの情報を抜き出して表示用に利用する
   const foundindex = qArray.findIndex((quiz) => quiz._id === selQid)!;
-  const selQ = qArray[foundindex]
+  const selQ = qArray[foundindex];
 
   // 情報を更新するための方法
   const [question, setQuestion] = useState(selQ?.question);
@@ -50,8 +51,18 @@ export const CorrectModal = memo((props: Props) => {
     if (selQ !== null) {
       const newquiz = { ...selQ, question: question, answer: answer };
       console.log(newquiz);
-      const newQarray = qArray.splice(foundindex, 1, newquiz)
-      // setQarray(newQarray);
+      console.log("###### Original array ############");
+      console.log(qArray);
+      console.log("######################");
+      // IDの一致する要素を書き直している
+      // set関数を利用して配列をアップデートしなくても反映されているのだが
+      // Contextで共有しているはずなんだが他のComponentから見ても問題ないんだろうか？
+      qArray.splice(foundindex, 1, newquiz);
+      console.log("###### Modified array ############");
+      console.log(qArray);
+      console.log("######################");
+      // Modal window を閉じる
+      onClose();
     }
   };
 
@@ -103,7 +114,12 @@ export const CorrectModal = memo((props: Props) => {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClickUpdate}> 内容を修正 </Button>
+            <Flex>
+              <Button onClick={onClickUpdate}> 内容を修正 </Button>
+              <Button background={"red"} onClick={onClose}>
+                Cancel
+              </Button>
+            </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
