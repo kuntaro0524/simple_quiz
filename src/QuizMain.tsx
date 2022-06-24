@@ -15,8 +15,9 @@ import { useQuiz } from "./useQuiz";
 export const QuizMain = () => {
   // const server_url = process.env.REACT_APP_SERVER_URL;
   // const server_port = process.env.REACT_APP_SERVER_PORT;
-  const server_url = "10.10.122.179";
+  // const server_url = "10.10.122.179";
   // const server_url = "192.168.99.123";
+  const server_url = "192.168.91.201";
   const server_port = "9201";
   let selquizid = "PPPPPPPP";
 
